@@ -1421,69 +1421,510 @@ public class LambdaIteration {
 Using these methods, you can effectively iterate and manipulate maps in Java depending on whether you need keys, values, or both. This versatility is crucial in real-world applications such as counting occurrences, caching, or organizing data.
 
 # What is load factor?
+In hash-based collections like `HashMap`, **load factor** defines how full the hash table can get before it is resized.
+
+- Default load factor in `HashMap` is **0.75**.
+- Threshold = `capacity * loadFactor`.
+- Higher load factor saves memory but may increase collisions.
+
 # What is capacity?
+**Capacity** is the number of buckets available in a hash table internally.
+
+- Initial capacity of `HashMap` is typically **16**.
+- When size crosses threshold, capacity is usually doubled.
+- Capacity affects performance because it influences collision rate.
+
 # ConcurrentHashMap
+`ConcurrentHashMap` is a thread-safe map designed for high concurrency.
+
+- Allows concurrent reads and many concurrent updates.
+- Faster than synchronizing a normal `HashMap` in multithreaded code.
+- Does not allow `null` keys or values.
+- Common in caching, shared registries, counters.
+
 # Stack Example
+`Stack` follows **LIFO (Last In, First Out)**.
+
+```java
+import java.util.Stack;
+
+Stack<Integer> stack = new Stack<>();
+stack.push(10);
+stack.push(20);
+System.out.println(stack.pop()); // 20
+```
+
 # Queue Example
+`Queue` follows **FIFO (First In, First Out)**.
+
+```java
+import java.util.LinkedList;
+import java.util.Queue;
+
+Queue<String> q = new LinkedList<>();
+q.offer("A");
+q.offer("B");
+System.out.println(q.poll()); // A
+```
+
 # PriorityQueue
+`PriorityQueue` orders elements by natural order (or comparator), not insertion order.
+
+- Head is the smallest element by default (min-heap behavior).
+- `offer()` inserts, `poll()` removes highest-priority element.
+- Useful in scheduling, top-k, shortest path algorithms.
+
 # Immutable Collection
+An immutable collection cannot be modified after creation.
+
+```java
+import java.util.List;
+List<String> list = List.of("A", "B"); // Java 9+
+// list.add("C"); // UnsupportedOperationException
+```
+
+Benefits: thread safety, predictable behavior, defensive programming.
+
 # Create Thread
+Two common ways:
+
+1. Extend `Thread` and override `run()`.
+2. Implement `Runnable` (preferred for separation of task and thread).
+
 # Runnable
+`Runnable` is a functional interface with a single `run()` method.
+
+```java
+Runnable task = () -> System.out.println("Task running");
+new Thread(task).start();
+```
+
 # Lambda Thread
+Since `Runnable` is functional, lambda syntax is concise:
+
+```java
+new Thread(() -> System.out.println("Running in lambda thread")).start();
+```
+
 # synchronized method
+A synchronized instance method locks on the current object (`this`).
+
+```java
+synchronized void increment() { count++; }
+```
+
+Only one thread can execute synchronized code on that same object at a time.
+
 # synchronized block
+Locks only a specific critical section, improving concurrency.
+
+```java
+synchronized (lockObject) {
+    // critical section
+}
+```
+
+More flexible than synchronizing the whole method.
+
 # volatile
+`volatile` ensures visibility of variable updates across threads.
+
+- Writes by one thread become visible to others immediately.
+- Does **not** provide atomicity for compound operations like `count++`.
+
 # Callable
+`Callable<V>` is like `Runnable` but:
+
+- Returns a value.
+- Can throw checked exceptions.
+
+Used with `ExecutorService`.
+
 # Future
+`Future` represents result of an asynchronous computation.
+
+- `get()` waits for result.
+- `isDone()` checks completion.
+- `cancel()` attempts cancellation.
+
 # ExecutorService
+`ExecutorService` manages thread pools and task execution.
+
+```java
+ExecutorService ex = java.util.concurrent.Executors.newFixedThreadPool(4);
+ex.submit(() -> System.out.println("Task"));
+ex.shutdown();
+```
+
+Prefer it over manual thread creation for scalability.
+
 # Deadlock Example
+Deadlock happens when two threads wait forever for each other’s locks.
+
+Example pattern:
+- Thread 1 locks A then waits for B.
+- Thread 2 locks B then waits for A.
+
+Prevention: consistent lock order, timeout locks, reduce nested locking.
+
 # wait()
+`wait()` releases monitor lock and puts the thread in waiting state until notified.
+
+- Must be called inside synchronized context.
+- Belongs to `Object` class.
+
 # notify()
+`notify()` wakes one waiting thread on the same monitor.
+
+- Called inside synchronized block/method.
+- `notifyAll()` wakes all waiting threads.
+
 # join()
+`join()` makes current thread wait for another thread to finish.
+
+```java
+t1.start();
+t1.join(); // wait for t1
+```
+
 # sleep()
+`Thread.sleep(ms)` pauses current thread for a specified time.
+
+- Does not release locks.
+- Throws `InterruptedException`.
+
 # Thread lifecycle
+Typical states:
+
+- **NEW**: thread created
+- **RUNNABLE**: ready/running
+- **BLOCKED/WAITING/TIMED_WAITING**: waiting for lock/signal/time
+- **TERMINATED**: finished execution
+
 # ThreadPool
+A thread pool reuses a fixed/dynamic set of threads to execute tasks.
+
+Benefits: lower thread-creation overhead, better resource control, improved throughput.
+
 # AtomicInteger
+`AtomicInteger` provides lock-free thread-safe integer operations.
+
+```java
+AtomicInteger c = new AtomicInteger(0);
+c.incrementAndGet();
+```
+
+Useful for counters in concurrent code.
+
 # ReentrantLock
+`ReentrantLock` is an explicit lock with advanced features over `synchronized`:
+
+- `tryLock()`
+- fair lock option
+- interruptible locking
+- multiple `Condition`s
+
 # ForkJoinPool
+`ForkJoinPool` supports divide-and-conquer parallelism.
+
+- Large task is split (forked) into subtasks.
+- Results are merged (joined).
+- Used by parallel streams internally.
+
 # Producer-Consumer
+Classic concurrency pattern:
+
+- Producer generates data.
+- Consumer processes data.
+- Shared bounded buffer coordinates both.
+
+Java implementations: `BlockingQueue`, `wait/notify`, or reactive pipelines.
+
 # Functional Interface
+A functional interface has exactly one abstract method.
+
+Examples: `Runnable`, `Callable`, `Predicate`, `Function`.
+Can include default/static methods.
+
 # Lambda
+Lambda is a concise way to represent anonymous functions.
+
+```java
+(a, b) -> a + b
+```
+
+Common with streams and functional interfaces.
+
 # Stream Example
+```java
+List<Integer> nums = List.of(1,2,3,4);
+nums.stream().filter(n -> n % 2 == 0).forEach(System.out::println);
+```
+
+Streams process collections declaratively.
+
 # map()
+`map()` transforms each element into another value.
+
+```java
+names.stream().map(String::toUpperCase)
+```
+
 # filter()
+`filter()` keeps only elements matching a condition.
+
+```java
+nums.stream().filter(n -> n > 10)
+```
+
 # reduce()
+`reduce()` combines stream elements into a single result.
+
+```java
+int sum = nums.stream().reduce(0, Integer::sum);
+```
+
 # Optional
+`Optional<T>` represents presence/absence of a value to avoid null checks.
+
+Common methods: `of`, `ofNullable`, `isPresent`, `orElse`, `map`.
+
 # Method Reference
+Method reference is shorthand for lambda calling an existing method.
+
+Examples:
+- `System.out::println`
+- `String::length`
+- `Integer::parseInt`
+
 # Parallel Stream
+`parallelStream()` enables parallel processing using ForkJoinPool.
+
+Use when data is large and operations are stateless and CPU-intensive.
+Avoid for small data or operations with shared mutable state.
+
 # Collectors
+`Collectors` provides terminal utilities for streams.
+
+Examples:
+- `toList()`
+- `toSet()`
+- `groupingBy()`
+- `joining()`
+- `counting()`
+
 # Default methods
+Default methods in interfaces (Java 8+) provide method bodies.
+
+Purpose: evolve interfaces without breaking existing implementations.
+
 # Date API
+Java 8 Date-Time API (`java.time`) is immutable and thread-safe.
+
+Core classes:
+- `LocalDate`
+- `LocalTime`
+- `LocalDateTime`
+- `ZonedDateTime`
+- `Instant`
+
 # Predicate
+`Predicate<T>`: takes input, returns boolean (`test`).
+
+```java
+Predicate<Integer> isEven = n -> n % 2 == 0;
+```
+
 # Function
+`Function<T, R>`: converts type T to R (`apply`).
+
+```java
+Function<String, Integer> len = String::length;
+```
+
 # Consumer
+`Consumer<T>`: takes input and returns nothing (`accept`).
+
+```java
+Consumer<String> print = System.out::println;
+```
+
 # Supplier
+`Supplier<T>`: provides a value with no input (`get`).
+
+```java
+Supplier<Double> rand = Math::random;
+```
+
 # BiFunction
+`BiFunction<T, U, R>` takes two inputs and returns one output.
+
+```java
+BiFunction<Integer, Integer, Integer> add = Integer::sum;
+```
+
 # forEach
+`forEach` performs an action for each element.
+
+```java
+list.forEach(System.out::println);
+```
+
 # flatMap
+`flatMap` maps each element to a stream and flattens nested streams.
+
+Useful for nested lists.
+
+```java
+listOfLists.stream().flatMap(List::stream)
+```
+
 # Stream vs Collection
+- **Collection** stores data in memory.
+- **Stream** processes data pipeline-style.
+
+Streams are single-use and lazy; collections are reusable and eager.
+
 # Singleton
+Singleton ensures only one instance of a class exists.
+
+Common approach:
+- private constructor
+- static instance
+- public getter
+
+Thread-safe best practice: enum singleton.
+
 # Serialization
+Serialization converts object state into byte stream for storage/transfer.
+
+- Class implements `Serializable`.
+- Deserialization reconstructs object.
+
 # serialVersionUID
+`serialVersionUID` is a version identifier for serialized classes.
+
+Helps verify sender/receiver class compatibility during deserialization.
+
 # Reflection
+Reflection inspects/classes/methods/fields at runtime and can invoke/access them dynamically.
+
+Used in frameworks, dependency injection, testing tools.
+
 # Annotations
+Annotations add metadata to code.
+
+Examples: `@Override`, `@Deprecated`, `@SuppressWarnings`.
+Custom annotations can be processed at compile/runtime.
+
 # Generics
+Generics enable type-safe reusable code.
+
+```java
+List<String> names = new ArrayList<>();
+```
+
+Benefits: compile-time type checking, no explicit casts.
+
 # Wildcards
+Wildcards in generics:
+
+- `?` unknown type
+- `? extends T` upper bound (read mostly)
+- `? super T` lower bound (write mostly)
+
 # Type Erasure
+Java implements generics via type erasure.
+
+Generic type info is removed at runtime, replaced by bounds/Object.
+Therefore `List<String>` and `List<Integer>` share same runtime class.
+
 # Shallow Copy
+Shallow copy duplicates object but not nested referenced objects.
+
+Changes in shared referenced objects affect both copies.
+
 # Deep Copy
+Deep copy duplicates object and all nested referenced objects recursively.
+
+Changes in one copy do not affect the other.
+
 # Memory Leak Cause
+In Java, leaks occur when objects are no longer needed but still referenced.
+
+Common causes:
+- static collections growing forever
+- unclosed resources/listeners
+- caches without eviction
+- accidental object retention
+
 # GC Types
+Common garbage collectors (varies by JDK version):
+
+- Serial GC
+- Parallel GC
+- G1 GC (default in modern Java)
+- ZGC
+- Shenandoah
+
+Each balances throughput, pause time, and memory footprint differently.
+
 # Heap vs Stack
+- **Stack**: method frames, local variables, thread-specific, fast.
+- **Heap**: objects/arrays, shared across threads, managed by GC.
+
 # JIT
+JIT (Just-In-Time) compiler compiles frequently used bytecode to native machine code at runtime for faster execution.
+
+Part of JVM performance optimization.
+
 # Abstract Class
+Abstract class can have abstract and concrete methods.
+
+- Cannot be instantiated.
+- Supports state (instance variables), constructors, and method implementations.
+- Used when classes share common base behavior.
+
 # Interface
+Interface defines a contract that classes implement.
+
+- Supports abstract methods, default/static methods, constants.
+- Enables multiple inheritance of type.
+
 # HashCode contract
+If two objects are equal according to `equals()`, they **must** return same `hashCode()`.
+
+Unequal objects may still share hash code (collision allowed).
+Violating this breaks hash-based collections behavior.
+
 # equals() override
+When overriding `equals()`, also override `hashCode()`.
+
+General rules for `equals()`:
+- reflexive
+- symmetric
+- transitive
+- consistent
+- `x.equals(null)` is false
+
 # Comparator chaining
+Comparator chaining combines multiple sort criteria.
+
+```java
+people.sort(
+    Comparator.comparing(Person::getLastName)
+              .thenComparing(Person::getFirstName)
+              .thenComparingInt(Person::getAge)
+);
+```
+
 # Java 17 features
+Important Java 17 (LTS) highlights:
+
+- Sealed classes (finalized)
+- Pattern matching for `instanceof`
+- Records (from Java 16, widely used with 17)
+- New macOS rendering pipeline
+- Strong encapsulation of JDK internals
+- Improved GCs and performance updates
+
