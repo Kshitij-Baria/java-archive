@@ -157,6 +157,202 @@ abstract class Shape {
 
 Abstraction allows users to interact with objects without knowing their internal logic.
 
+# Autoboxing & Unboxing
+In Java, **auto-boxing** and **unboxing** are features introduced in Java 5 that help in the automatic conversion between **primitive types** and their corresponding **wrapper classes**. This improves code readability and reduces boilerplate conversion code.
+## 1. Auto-boxing  
+Auto-boxing is the automatic conversion of a **primitive type** to its corresponding **wrapper class** object. For example, an `int` can be automatically converted to `Integer`, `double` to `Double`, etc.
+### Example:  
+```java
+// Java
+public class AutoBoxingExample {
+    public static void main(String[] args) {
+        int primitiveInt = 100;
+        // Auto-boxing: the primitive int is automatically converted to Integer
+        Integer wrappedInt = primitiveInt;
+        // We can now use wrappedInt as an object
+        System.out.println("Wrapped Integer: " + wrappedInt);
+        // Auto-boxing works with collections that require objects
+        java.util.List<Integer> numbers = new java.util.ArrayList<>();
+        numbers.add(primitiveInt); // int is auto-boxed to Integer
+        System.out.println("Numbers list: " + numbers);
+    }
+}
+```
+**Output**
+```
+Wrapped Integer: 100
+Numbers list: [100]
+```
+## 2. Unboxing  
+Unboxing is the reverse process where a **wrapper class object** is converted back to its corresponding **primitive type** automatically.
+### Example:  
+```java
+// Java
+public class UnboxingExample {
+    public static void main(String[] args) {
+        Integer wrappedInt = new Integer(200);
+        // Unboxing: the Integer object is automatically converted to int
+        int primitiveInt = wrappedInt;
+        System.out.println("Primitive int: " + primitiveInt);
+        // Unboxing works in operations
+        int sum = wrappedInt + 50; // wrappedInt is unboxed automatically
+        System.out.println("Sum: " + sum);
+    }
+}
+```
+**Output**
+```
+Primitive int: 200
+Sum: 250
+```
+## 3. Key Points  
+- Java **automatically detects** when to auto-box or unbox in most contexts.  
+- Auto-boxing is useful when working with **collections** (like `List`, `Set`, `Map`) that only accept objects.  
+- Unboxing occurs when an **object needs to be used in a primitive context**, such as arithmetic operations, comparisons, or method calls expecting primitives.  
+- **Null Safety**: Be careful, unboxing a `null` wrapper object causes `NullPointerException`.  
+  
+### Example with NullPointerException:  
+```java
+// Java
+public class NullUnboxing {
+    public static void main(String[] args) {
+        Integer wrapped = null;
+        try {
+            int primitive = wrapped; // This will throw NullPointerException
+        } catch (NullPointerException e) {
+            System.out.println("Error: " + e);
+        }
+    }
+}
+```
+**Output**
+```
+Error: java.lang.NullPointerException
+```
+## Conclusion  
+Auto-boxing and unboxing make Java code cleaner and less verbose by automatically converting between primitives and their corresponding wrapper classes. However, developers must be aware of potential **null values** to avoid runtime exceptions. This feature is particularly helpful when working with generic collections.
+
+# Wrapper classes
+**Wrapper classes in Java are object representations of Java's primitive data types, allowing primitives to be treated as objects.**
+
+## Overview  
+In Java, **primitive types** like `int`, `double`, `char`, and `boolean` are not objects, which limits their use in certain contexts, such as in collections that require objects (e.g., `ArrayList`, `HashMap`). **Wrapper classes** provide a way to encapsulate these primitive types into objects.
+## List of Wrapper Classes  
+Each primitive type has a corresponding wrapper class in the `java.lang` package:
+- `byte` → `Byte`    
+- `short` → `Short`    
+- `int` → `Integer`    
+- `long` → `Long`    
+- `float` → `Float`    
+- `double` → `Double`    
+- `char` → `Character`    
+- `boolean` → `Boolean`    
+  
+## Key Features  
+1. **Object Representation**: Primitives can be wrapped into objects for usage in APIs or collections that require objects.    
+  
+    ```java
+    Integer num = Integer.valueOf(10); // wrapping int into Integer object
+    ArrayList<Integer> list = new ArrayList<>();
+    list.add(20); // autoboxing converts int to Integer automatically
+    ```
+2. **Utility Methods**: Wrapper classes provide useful static and instance methods. For example:    
+   - `Integer.parseInt("123")` converts a `String` to an `int`.    
+   - `Double.toString(3.14)` converts a double value to a `String`.    
+   - `Character.isDigit('5')` checks if a character is a digit.    
+  
+3. **Autoboxing and Unboxing**: Java automatically converts between primitives and wrapper objects:  
+   - **Autoboxing**: Converting a primitive to a wrapper object automatically.    
+  
+    ```java
+    Integer obj = 100; // int 100 is autoboxed to Integer
+    ```
+- **Unboxing**: Converting a wrapper object back to a primitive automatically.    
+  
+    ```java
+        int value = obj; // Integer obj unboxed to int
+    ```
+4. **Nullability**: Wrappers can be `null`, which is not possible with primitive types. This is useful for databases or optional values.  
+  
+## Use Cases  
+- Required in **collections** like `ArrayList<Integer>` because collections can't store primitives.    
+- Useful for **generics**, **serialization**, and **utility operations**.    
+- Helps in **converting between Strings and numeric/boolean types** for input parsing.  
+  
+In summary, **wrapper classes bridge the gap between Java's primitive types and objects**, enabling powerful features like use in collections, method calls needing objects, and utility functions for type manipulation.
+
+# Can we override private or static methods?
+In Java, **method overriding** is a mechanism that allows a subclass to provide a specific implementation for a method that is already defined in its superclass. However, **private** and **static** methods behave differently in the context of overriding:
+
+## 1. Private Methods  
+  
+- **Cannot be overridden** because they are **not visible to subclasses**.  
+- Private methods belong strictly to the class in which they are defined.  
+- If a subclass defines a method with the same name and parameters as a private method in the superclass, it is treated as a completely **new method**, not an override.  
+  
+```java
+class Parent {
+    private void display() {
+        System.out.println("Parent private display");
+    }
+}
+class Child extends Parent {
+    private void display() {
+        System.out.println("Child private display");
+    }
+}
+public class Test {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+        // obj.display(); // Compile-time error: display() has private access
+    }
+}
+```
+### Key Point: Private methods are used for encapsulation, internal logic, and maintaining class invariants. They are intentionally hidden from subclasses.
+
+## 2. Static Methods  
+  
+- **Cannot be overridden**, they are **hidden**, not overridden.  
+- Static methods belong to the class (compile-time binding), not to instances (runtime polymorphism).  
+- Declaring a static method with the same signature in a subclass **hides** the superclass method, instead of overriding it.  
+  
+```java
+class Parent {
+    static void show() {
+        System.out.println("Parent static show");
+    }
+}
+class Child extends Parent {
+    static void show() {
+        System.out.println("Child static show");
+    }
+}
+public class Test {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+        obj.show(); // Output: Parent static show
+        Child.show(); // Output: Child static show
+    }
+}
+```
+### Key Point: Static methods are resolved at compile time using the **reference type**, not the object type. This is why overriding doesn’t apply to static methods.
+
+## Summary
+  
+| Method Type | Can be overridden? | Notes |  
+|------------|-----------------|------|  
+| private    | No              | They are class-specific and hidden from subclasses. |  
+| static     | No              | They can be hidden but are resolved at compile-time via class reference. |  
+| normal/non-final | Yes         | Supports true overriding and runtime polymorphism. |  
+| final      | No              | Cannot override to maintain consistent behavior. |  
+  
+  
+**Conceptual Understanding:**
+- **Private methods**: You can't override because they are for encapsulation and internal class logic.  
+- **Static methods**: Polymorphism doesn’t apply; they are tied to the class, not the instance.  
+  
+By restricting overriding for private and static methods, Java ensures **encapsulation and predictable method invocation** behavior.
+
 # What is final?
 The final keyword is used to restrict modification. It can be applied to variables, methods, and classes:
 * Final Variables: Once assigned, their value cannot change.
@@ -1927,4 +2123,3 @@ Important Java 17 (LTS) highlights:
 - New macOS rendering pipeline
 - Strong encapsulation of JDK internals
 - Improved GCs and performance updates
-
