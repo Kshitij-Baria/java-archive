@@ -383,32 +383,28 @@ Is 5 a prime number? true
 ### Check if a Number is Armstrong
 
 ```java
-import java.util.ArrayList;
-import java.util.List;
-
 public class IsNumberArmstrong {
     public static void main(String[] args) {
         int number = 153;
         System.out.println(String.format("Is %d an armstrong number? %s", number, isNumberArmstrong(number)));
     }
 
-    public static List<Integer> getDigits(int number) {
-        String numberString = Integer.toString(number);
-
-        List<Integer> digits = new ArrayList<>();
-        for (char c: numberString.toCharArray()) {
-            digits.add(c - '0');
-        }
-        return digits;
-    }
-
     public static boolean isNumberArmstrong(int number) {
-        List<Integer> digits = getDigits(number);
+        int digits = 0;
+        int temp = number;
 
+        while(temp > 0) {
+            digits++;
+            temp /= 10;
+        }
+
+        temp = number;
         int sum = 0;
-        for(int i: digits) {
-            int j = (int) Math.pow(i, digits.size());
-            sum += j;
+
+        while(temp > 0) {
+            int digit = temp % 10;
+            sum += Math.pow(digit, digits);
+            temp /= 10;
         }
 
         return sum == number;
@@ -425,17 +421,260 @@ Is 153 an armstrong number? true
 
 ### Sum of Digits of a Number
 
+```java
+public class SumOfDigitsOfANumber {
+    public static void main(String[] args) {
+        int number = 153;
+        System.out.println(getSumOfDigits(number));
+        System.out.println(getSumOfDigitsUsingStringConversion(number));
+    }
+
+    public static int getSumOfDigits(int number) {
+        int temp = number;
+        int sum = 0;
+        while (temp > 0) {
+            sum += temp % 10;
+            temp /= 10;
+        }
+        return sum;
+    }
+
+    public static int getSumOfDigitsUsingStringConversion(int number) {
+        String numberString = Integer.toString(number);
+        char[] chars = numberString.toCharArray();
+        int sum = 0;
+        for (int i = 0; i < chars.length; i++) {
+            sum += chars[i] - '0';
+        }
+        return sum;
+    }
+}
+```
+
+Output:
+```
+9
+9
+```
+
+---
+
 ### Reverse Digits of a Number
+
+```java
+public class ReverseDigitsOfANumber {
+    public static void main(String[] args) {
+        int number = 153;
+        System.out.println(reverseDigits(number));
+        System.out.println(reverseDigitsUsingStringConversion(number));
+    }
+
+    public static int reverseDigits(int number) {
+        int temp = number;
+        int reverse = 0;
+        while (temp > 0) {
+            reverse = (reverse * 10) + (temp % 10);
+            temp /= 10;
+        }
+        return reverse;
+    }
+
+    public static int reverseDigitsUsingStringConversion(int number) {
+        String numberString = Integer.toString(number);
+
+        char[] charArray = numberString.toCharArray();
+
+        int left = 0;
+        int right = numberString.length() - 1;
+
+        while (left < right) {
+            char temp = charArray[left];
+            charArray[left] = charArray[right];
+            charArray[right] = temp;
+
+            left++;
+            right--;
+        }
+
+        String reversedNumberString = new String(charArray);
+        return Integer.parseInt(reversedNumberString);
+    }
+}
+```
+
+Output:
+```
+351
+351
+```
+
+---
 
 ## String Coding Questions
 
 ### Find Duplicate Characters in a String
 
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class DuplicateCharactersInAString {
+    public static void main(String[] args) {
+        String string = "HelloWorld";
+        System.out.println(findDuplicates(string));
+    }
+
+    public static Map<Character, Integer> findDuplicates(String string) {
+        Map<Character, Integer> occurrenceMap = new HashMap<>();
+        for (int i = 0; i < string.length(); i++) {
+            int value = occurrenceMap.get(string.charAt(i)) == null ? 1 : occurrenceMap.get(string.charAt(i)) + 1;
+            occurrenceMap.put(string.charAt(i), value);
+
+            // A better way for java 23 onwards would be
+            // occurrenceMap.put(string.charAt(i), occurrenceMap.getOrDefault(string.charAt(i), 0) + 1);
+        }
+        return occurrenceMap;
+    }
+}
+```
+
+Output:
+```
+{r=1, d=1, e=1, W=1, H=1, l=3, o=2}
+```
+
+---
+
 ### Remove Duplicate Characters from a String
+
+```java
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class RemoveDuplicatesFromString {
+    public static void main(String[] args) {
+        String string = "helloWorld";
+        System.out.println(removeDuplicatesUsingStream(string));
+        System.out.println(removeDuplicatesUsingSet(string));
+    }
+
+    public static String removeDuplicatesUsingStream(String string) {
+        return Arrays.stream(string.split(""))
+        .distinct()
+        .collect(Collectors.joining(""));
+    }
+
+    public static String removeDuplicatesUsingSet(String string) {
+        Set<Character> characterSet = new LinkedHashSet<>();
+
+        for(char c: string.toCharArray()) {
+            characterSet.add(c);
+        }
+
+        StringBuilder result = new StringBuilder();
+        for(char c: characterSet) {
+            result.append(c);
+        }
+
+        return result.toString();
+    }
+}
+```
+
+Output:
+```
+heloWrd
+heloWrd
+```
+
+---
 
 ### Count the Occurrence of Each Character in a String
 
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class DuplicateCharactersInAString {
+    public static void main(String[] args) {
+        String string = "HelloWorld";
+        System.out.println(findDuplicates(string));
+    }
+
+    public static Map<Character, Integer> findDuplicates(String string) {
+        Map<Character, Integer> occurrenceMap = new HashMap<>();
+        for (int i = 0; i < string.length(); i++) {
+            int value = occurrenceMap.get(string.charAt(i)) == null ? 1 : occurrenceMap.get(string.charAt(i)) + 1;
+            occurrenceMap.put(string.charAt(i), value);
+
+            // A better way for java 23 onwards would be
+            // occurrenceMap.put(string.charAt(i), occurrenceMap.getOrDefault(string.charAt(i), 0) + 1);
+        }
+        return occurrenceMap;
+    }
+}
+```
+
+Output:
+```
+{r=1, d=1, e=1, W=1, H=1, l=3, o=2}
+```
+
+---
+
 ### Check if Two Strings are Anagrams
+
+```java
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class AreStringsAnagrams {
+    public static void main(String[] args) {
+        String string1 = "listen";
+        String string2 = "silent";
+
+        System.out.println(areStringsAnagrams(string1, string2));
+    }
+
+    public static boolean areStringsAnagrams(String string1, String string2) {
+        Map<String, Integer> occurrenceMap1 = getCharacterOccurrences(string1);
+        Map<String, Integer> occurrenceMap2 = getCharacterOccurrences(string2);
+
+        for(Entry<String, Integer> entry: occurrenceMap1.entrySet()) {
+            if (entry.getValue() != occurrenceMap2.get(entry.getKey())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static Map<String, Integer> getCharacterOccurrences(String string) {
+        List<String> characterList = Arrays.stream(string.split("")).toList();
+        Map<String, Integer> occurrenceMap = new HashMap<>();
+        for(String character: characterList) {
+            if (occurrenceMap.get(character) == null) {
+                occurrenceMap.put(character, 1);
+            } else {
+                occurrenceMap.put(character, occurrenceMap.get(character) + 1);
+            }
+        }
+        return occurrenceMap;
+    }
+}
+```
+
+Output:
+```
+true
+true
+```
+
+---
 
 ### Find the First Non-Repeated Character in a String
 
